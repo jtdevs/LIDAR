@@ -1,11 +1,12 @@
 #include "LPC214x.H"
 #include "LIDAR.h"
 #include "DATATYPES.h"
-#include "I2C.h"
+#include "I2C0.h"
 #include "I2C1.h"
 #include "TMR.h"
 #include "UART.h"
-
+#define UART TRUE
+#define I2C FALSE
 int main(void)
 {
 	//variables
@@ -13,15 +14,13 @@ int main(void)
 	uint8 MSBmap[401];
 	uint8 input;
 	uint8 *pinput;
-	BOOL debug;
-	BOOL ms;
 	uint8 step_divider = 1;
 	//system control inputs
 	init_inputs();
-	debug = dbg_stat();
+	BOOL debug = dbg_stat();
 	//debug = FALSE;
 	//ms = FALSE;
-	ms = ms_stat();
+	BOOL ms = ms_stat();
 	//User feedback led
 	Init_LED();
 	LED_ON();
@@ -31,16 +30,15 @@ int main(void)
 	//Communications
 	InitUART0(FALSE); // Initialize UART0
 	I2C0_init(); // Initialize I2C0
-	I2C1_init(0xA1);
 	//LIDAR and motor initialization
 	motor_init();
-	sensorReset(debug);
-	delayMicros(100000);
-	setZero(debug);
+	sensorInit();
+
 	LED_OFF();
 
 	if(ms == TRUE)
 	{
+		I2C1_init(0x02);
 		LED_ON();
 		delayMicros(500000);//half a second
 		LED_OFF();
@@ -55,16 +53,19 @@ int main(void)
 			{
 				case 0x00:
 					change_step(1);
+					I2C1_byteTx(0x00, 0x00);
 					step_divider = 1;
 					break;
 
 				case 0x01:
 					change_step(2);
+					I2C1_byteTx(0x00, 0x01);
 					step_divider = 2;
 					break;
 
 				case 0x02:
 					change_step(4);
+					I2C1_byteTx(0x00, 0x02);
 					step_divider = 4;
 					break;
 
@@ -75,10 +76,13 @@ int main(void)
 					break;
 
 				case 0x04:
-					updateRange(LSBmap, MSBmap, debug, step_divider);
+					updateRange(LSBmap, MSBmap, step_divider);
+					sendMap(LSBmap, MSBmap, step_divider, UART);
 					break;
-
-				case 0x05:
+				
+				default:
+					external_request(LSBmap, MSBmap, step_divider, input-4);
+				/*case 0x05:
 					IO1SET |= (1 << EN_PIN); //Disable motor
 					break;
 
@@ -95,11 +99,13 @@ int main(void)
 					break;
 				case 0x08:
 					//send a scan request, wait for the incoming data
+					*/
 			}
 		}
 	}
 	else
 	{
+		I2C1_init(0xA1);
 		LED_ON();
 		delayMicros(500000);//half a second
 		LED_OFF();
@@ -135,9 +141,9 @@ int main(void)
 					LED_OFF();
 					break;
 				case 0x04:
-					updateRange(LSBmap, MSBmap, debug, step_divider);
+					updateRange(LSBmap, MSBmap, step_divider);
 					break;
-				case 0x05:
+				/*case 0x05:
 					IO1SET |= (1 << EN_PIN); //Disable motor
 					break;
 				case 0x06:
@@ -152,7 +158,7 @@ int main(void)
 					break;
 				case 0x08:
 					//take a measurement and send data
-					break;
+					break;*/
 				default:
 					break;
 			}
@@ -160,4 +166,3 @@ int main(void)
 	}
 }
 //Para efectos de prueba se dejaran las direcciones constantes por ahora.
-//******testear el correcto funcionamiento de todos los pines de interes.

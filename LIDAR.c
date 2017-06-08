@@ -1,5 +1,6 @@
 #include "LIDAR.h"
 #include "I2C0.h"
+#include "I2C1.h"
 #include "TMR.h"
 #include "UART.h"
 
@@ -7,9 +8,68 @@
 BOOL read_error = FALSE;
 BOOL direction = TRUE;
 uint8 error_counter = 0;
-uint16 i;
+uint16 k;
 
-void updateRange(uint8 *LSBmap, uint8 *MSBmap, BOOL debug, uint8 step_div){
+void sensorInit()
+{
+	read_error = FALSE;
+	error_counter = 0;
+	while(!read_error)
+	{
+		if(error_counter > 10)
+			IO1CLR = (1 << 24);
+		read_error = sensorReset();
+		error_counter++;
+	}
+	read_error = FALSE;
+	error_counter = 0;
+	delayMicros(100000);
+	while(!read_error)
+	{
+		if(error_counter > 10)
+			IO1CLR = (1 << 24);
+		read_error = setZero();
+		error_counter++;
+	}
+	delayMicros(100000);
+	read_error = FALSE;
+	error_counter = 0;
+}
+
+void sendMap(uint8 *LSBmap, uint8 *MSBmap, uint8 step_div, BOOL protocol)
+{
+	if(protocol)
+	{
+		for(k = 0; k <(step_div*100)+1; k++)
+		{
+			U0Write(MSBmap[k]);
+			U0Write(LSBmap[k]);
+		}
+	}
+	else
+	{
+		for(k = 0; k <(step_div*100)+1; k++)
+		{
+			I2C1_byteTx(0x02, MSBmap[k]);
+			I2C1_byteTx(0x02, LSBmap[k]);
+		}
+	}
+}
+
+BOOL external_request(uint8 *LSBmap, uint8 *MSBmap, uint8 step_divider, uint8 addr)
+{
+	uint8 count = 0;
+	I2C1_byteTx(addr<<1, 0x04);
+	while(count <= step_divider*100)
+	{
+		I2C1_byteRx(&MSBmap[count]);
+		I2C1_byteRx(&LSBmap[count]);
+		count++;
+	}
+	return TRUE;
+}
+
+void updateRange(uint8 *LSBmap, uint8 *MSBmap, uint8 step_div){
 	IO1CLR |= (1 << EN_PIN); //Enable motor
 	delayMicros(500);// wait for the FET's to energyze
 	if(direction)
@@ -22,24 +82,26 @@ void updateRange(uint8 *LSBmap, uint8 *MSBmap, BOOL debug, uint8 step_div){
 		}
 		delayMicros(1000);
 		motor_step(TRUE);
+		read_error = FALSE;
+		error_counter = 0;
 		while(!read_error)
 		{
 			if(error_counter > 10)
 				IO1CLR = (1 << 24);
-			read_error = getDistance(&LSBmap[0], &MSBmap[0], debug);
+			read_error = getDistance(&LSBmap[0], &MSBmap[0]);
 			error_counter++;
 		}
 		error_counter = 0;
 		read_error = FALSE;
 		IO1SET = (1 << 24);
-		for(i = 1; i <(step_div*100)+1; i++)
+		for(k = 1; k <(step_div*100)+1; k++)
 		{
 			motor_step(direction);
 			while(!read_error)
 			{
 				if(error_counter > 10)
 					IO1CLR = (1 << 24);
-				read_error = getDistance(&LSBmap[i], &MSBmap[i], debug);
+				read_error = getDistance(&LSBmap[k], &MSBmap[k]);
 				error_counter++;
 			}
 			error_counter = 0;
@@ -48,13 +110,13 @@ void updateRange(uint8 *LSBmap, uint8 *MSBmap, BOOL debug, uint8 step_div){
 		}
 	}
 	else{
-		for(i = (step_div*100); i > 0; i--)
+		for(k = (step_div*100); k > 0; k--)
 		{
 			while(!read_error)
 			{
 				if(error_counter > 10)
 					IO1CLR = (1 << 24);
-				read_error = getDistance(&LSBmap[i], &MSBmap[i], debug);
+				read_error = getDistance(&LSBmap[k], &MSBmap[k]);
 				error_counter++;
 			}
 			error_counter = 0;
@@ -66,7 +128,7 @@ void updateRange(uint8 *LSBmap, uint8 *MSBmap, BOOL debug, uint8 step_div){
 		{
 			if(error_counter > 10)
 				IO1CLR = (1 << 24);
-			read_error = getDistance(&LSBmap[0], &MSBmap[0], debug);
+			read_error = getDistance(&LSBmap[0], &MSBmap[0]);
 			error_counter++;
 		}
 		error_counter = 0;
@@ -75,69 +137,6 @@ void updateRange(uint8 *LSBmap, uint8 *MSBmap, BOOL debug, uint8 step_div){
 	}
 	direction = !direction;
 	IO1SET |= (1 << EN_PIN); //Disable motor
-	for(i = 0; i <(step_div*100)+1; i++){
-		U0Write(MSBmap[i]);
-		U0Write(LSBmap[i]);
-	}
-}
-
-void sensorReset(BOOL debug){
-	while(!read_error)
-	{
-		if(error_counter > 10)
-			IO1CLR |= (1 << 24);
-		read_error = I2C0_write(0x00, 0x00, debug);
-		error_counter++;
-	}
-	error_counter = 0;
-	read_error = FALSE;
-	IO1SET |= (1 << 24);
-}
-
-void setZero(BOOL debug){
-	while(!read_error)
-	{
-		if(error_counter > 10)
-			IO1CLR |= (1 << 24);
-		read_error = I2C0_write(0x13, (256-OFFSET), debug);
-		error_counter++;
-	}
-	error_counter = 0;
-	read_error = FALSE;
-	IO1SET |= (1 << 24);
-}
-
-BOOL getDistance(uint8 *LSB, uint8 *MSB, BOOL debug)
-{
-	uint8 busy = 0x01;
-	uint8* pbusy = &busy;
-	if(!I2C0_write(0x00, 0x04, debug))
-	{
-		if(debug)
-			U0Write_text("ERROR: Failure during acquisition request at func BOOL getDistance(uint8 *distance)\n\r");
-		return FALSE;
-	}
-	while(busy & 0x01){
-		if(!I2C0_read(0x01, pbusy, debug))
-		{
-			if(debug)
-				U0Write_text("ERROR: Failure during busy flag reading at func BOOL getDistance(uint8 *distance)\n\r");
-			return FALSE;
-		}
-	}
-	if(!I2C0_read(0xf, LSB, debug))
-	{
-		if(debug)
-			U0Write_text("ERROR: Failure during distance reading 1st byte at func BOOL getDistance(uint8 *distance)\n\r");
-		return FALSE;
-	}
-	if(!I2C0_read(0x10, MSB, debug))
-	{
-		if(debug)
-			U0Write_text("ERROR: Failure during distance reading 2nd byte at func BOOL getDistance(uint8 *distance)\n\r");
-		return FALSE;
-	}
-	return TRUE;
 }
 
 void motor_init()

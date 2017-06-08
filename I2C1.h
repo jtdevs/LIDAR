@@ -13,10 +13,6 @@ extern BOOL I2C1_byteStreamTx(uint8 address, uint8 *byte_array, uint8 size);
 extern BOOL I2C1_byteRx(uint8 *byte);
 extern BOOL I2C1_byteStreamRx(uint8 *byte_array);
 
-uint8 target_address;
-uint8 buffer[401];
-uint16 data_count;
-uint16 expected_data;
 extern BOOL I2C1_busy;
 extern BOOL I2C1_error;
 

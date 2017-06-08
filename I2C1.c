@@ -1,11 +1,11 @@
 #include "I2C1.h"
 
-uint16 i;
-uint16 j;
-uint8 target_address;
-uint8 buffer[401] = {0};
-uint16 data_count;
-uint16 expected_data;
+uint16 u;
+uint16 v;
+uint8 I2C1_target_address;
+uint8 I2C1_buffer[401] = {0};
+uint16 I2C1_data_count;
+uint16 I2C1_expected_data;
 BOOL I2C1_busy = FALSE;
 BOOL I2C1_error = FALSE;
 
@@ -15,17 +15,17 @@ void __irq I2C_Status1(void)
 	{
 //MASTER TRANSMITTER
 		case 0x08: // START condition has been transmitted
-			I2C1DAT = target_address;
+			I2C1DAT = I2C1_target_address;
 			I2C1CONCLR = 0x18; // clear STO and SI
-			i = 0;
+			u = 0;
 			break;
 		case 0x10: // A repeated START condtion has been transmitted
-			I2C1DAT = target_address;
+			I2C1DAT = I2C1_target_address;
 			I2C1CONCLR = 0x18; // Clear STO and SI
-			i = 0;
+			u = 0;
 			break;
 		case 0x18: // SLA+W has been transmitted, ACK received
-			I2C1DAT = buffer[i];
+			I2C1DAT = I2C1_buffer[u];
 			I2C1CONCLR = 0x38; // clear STA, STO and SI
 			break;
 		case 0x20: // SLA+W has been transmitted, NACK received
@@ -35,10 +35,10 @@ void __irq I2C_Status1(void)
 			I2C1_busy = FALSE;
 			break;
 		case 0x28: // Data byte in I2DAT transmitted. ACK received
-			i++;
-			if(i < data_count)
+			u++;
+			if(u < I2C1_data_count)
 			{
-				I2C1DAT = buffer[i];
+				I2C1DAT = I2C1_buffer[u];
 				I2C1CONCLR = 0x38; // clear STA, STO and SI
 			}
 			else
@@ -61,9 +61,9 @@ void __irq I2C_Status1(void)
 			break;
 //MASTER RECEIVER
 		case 0x40: // SLA+R has been transmitted. ACK has been received.
-			data_count = 0;
+			I2C1_data_count = 0;
 			I2C1CONCLR = 0x38; // clear STA, STO and SI
-			if(expected_data == 1)
+			if(I2C1_expected_data == 1)
 				I2C1CONCLR = 0x04; // Clr AA
 			else
 				I2C1CONSET = 0x04; // Set AA
@@ -75,9 +75,9 @@ void __irq I2C_Status1(void)
 			I2C1_busy = FALSE;
 			break;
 		case 0x50: // Data byte has been received. ACK has been returned.
-			buffer[data_count] = I2C1DAT;
-			data_count++;
-			if(data_count+1 == expected_data)	//	Don't acknowledge the last data bit
+			I2C1_buffer[I2C1_data_count] = I2C1DAT;
+			I2C1_data_count++;
+			if(I2C1_data_count+1 == I2C1_expected_data)	//	Don't acknowledge the last data bit
 				I2C1CONCLR = 0x3C; // clear STA, STO SI and AA
 			else
 			{
@@ -86,14 +86,14 @@ void __irq I2C_Status1(void)
 			}
 			break;
 		case 0x58: // Data byte has been received. NACK has been returned.
-			if(data_count+1 == expected_data)// If this is the last bit it's okay to return a NACK
+			if(I2C1_data_count+1 == I2C1_expected_data)// If this is the last bit it's okay to return a NACK
 			{
-				buffer[data_count] = I2C1DAT;
-				data_count++;
+				I2C1_buffer[I2C1_data_count] = I2C1DAT;
+				I2C1_data_count++;
 			}
 			I2C1CONCLR = 0x28; // clear STA and SI
 			I2C1CONSET = 0x10; // set STO
-			if(data_count < expected_data)
+			if(I2C1_data_count < I2C1_expected_data)
 				I2C1_error = TRUE;
 			I2C1_busy = FALSE;
 			break;
@@ -101,7 +101,7 @@ void __irq I2C_Status1(void)
 		case 0x60: // Addressed with own SLA+W. ACK returned
 			I2C1CONCLR = 0x18; // Clear STO and SI
 			I2C1CONSET = 0x04; // Set AA
-			data_count = 0;
+			I2C1_data_count = 0;
 			break;
 		case 0x68: // Arbitration lost during SLA+R/W as a Master. Own SLA+W received. ACK returned.
 			I2C1CONCLR = 0x1C; // Clear STO, SI and AA
@@ -110,15 +110,15 @@ void __irq I2C_Status1(void)
 		case 0x70: // Addressed with GC addr. ACK returned
 			I2C1CONCLR = 0x18; // Clear STO and SI
 			I2C1CONSET = 0x04; // Set AA
-			data_count = 0;
+			I2C1_data_count = 0;
 			break;
 		case 0x78: // Arbitration lost during SLA+R/W as a Master. GC received. ACK returned.
 			I2C1CONCLR = 0x1C; // Clear STO, SI and AA
 			I2C1_error = TRUE;
 			break;
 		case 0x80: // Previously addressed with own SLV addr. Data received. ACK returned.
-			buffer[data_count] = I2C1DAT;
-			data_count++;
+			I2C1_buffer[I2C1_data_count] = I2C1DAT;
+			I2C1_data_count++;
 			I2C1CONCLR = 0x18; // Clear STO and SI
 			I2C1CONSET = 0x04; // Set AA
 			break;
@@ -128,8 +128,8 @@ void __irq I2C_Status1(void)
 			I2C1_error = TRUE;
 			break;
 		case 0x90: // Previously addressed with GC addr. Data received. ACK returned.
-			buffer[data_count] = I2C1DAT;
-			data_count++;
+			I2C1_buffer[I2C1_data_count] = I2C1DAT;
+			I2C1_data_count++;
 			I2C1CONCLR = 0x18; // Clear STO and SI
 			I2C1CONSET = 0x04; // Set AA
 			break;
@@ -144,9 +144,9 @@ void __irq I2C_Status1(void)
 			break;
 //SLAVE TRANSMITTER
 		case 0xA8: // Own SLA+R received. ACK returned
-			i = 0;
-			I2C1DAT = buffer[i];
-			if(data_count == 1)
+			u = 0;
+			I2C1DAT = I2C1_buffer[u];
+			if(I2C1_data_count == 1)
 				I2C1CONCLR = 0x1C; // Clear STO, SI and AA
 			else
 			{
@@ -155,9 +155,9 @@ void __irq I2C_Status1(void)
 			}
 			break;
 		case 0xB0: // Arbitration lost in SLA+R/W as master. Own SLA+R received. ACK returned
-			i = 0;
-			I2C1DAT = buffer[i];
-			if(data_count == 1) // if its the last byte
+			u = 0;
+			I2C1DAT = I2C1_buffer[u];
+			if(I2C1_data_count == 1) // if its the last byte
 				I2C1CONCLR = 0x1C; // Clear STO, SI and AA
 			else
 			{
@@ -167,9 +167,9 @@ void __irq I2C_Status1(void)
 			I2C1_error = TRUE;
 			break;
 		case 0xB8: // Data transmitted. ACK received.
-			i++;
-			I2C1DAT = buffer[i];
-			if(data_count == i+1) // if its the last byte
+			u++;
+			I2C1DAT = I2C1_buffer[u];
+			if(I2C1_data_count == u+1) // if its the last byte
 				I2C1CONCLR = 0x1C; // Clear STO, SI and AA
 			else
 			{
@@ -178,7 +178,7 @@ void __irq I2C_Status1(void)
 			}
 			break;
 		case 0xC0: // Data transmitted. NACK received.
-			if(i < data_count) // If it's the last byte, then it's ok
+			if(u < I2C1_data_count) // If it's the last byte, then it's ok
 				I2C1_error = TRUE;
 			I2C1CONCLR = 0x38; // Clear STA, STO and SI
 			I2C1CONSET = 0x04; // Set AA
@@ -228,9 +228,9 @@ void I2C1_init(uint8 addr)
 
 BOOL I2C1_byteTx(uint8 address, uint8 byte)
 {
-	target_address = address;
-	data_count = 1;
-	buffer[0] = byte;
+	I2C1_target_address = address;
+	I2C1_data_count = 1;
+	I2C1_buffer[0] = byte;
 	I2C1_error = FALSE;
 	I2C1_busy = TRUE;
 	I2C1_StartTx();
@@ -243,10 +243,10 @@ BOOL I2C1_byteTx(uint8 address, uint8 byte)
 
 BOOL I2C1_byteStreamTx(uint8 address, uint8 *byte_array, uint8 size)
 {
-	target_address = address;
-	data_count = size;
-	for(j=0; j<size; j++)
-		buffer[j]=byte_array[j];
+	I2C1_target_address = address;
+	I2C1_data_count = size;
+	for(v=0; v<size; v++)
+		I2C1_buffer[v]=byte_array[v];
 	I2C1_error = FALSE;
 	I2C1_busy = TRUE;
 	I2C1_StartTx();
@@ -263,7 +263,7 @@ BOOL I2C1_byteRx(uint8 *byte)
 	I2C1_busy = TRUE;
 	I2C1_StartRx();
 	while(I2C1_busy);
-	*byte = buffer[0];
+	*byte = I2C1_buffer[0];
 	if(I2C1_error)
 		return FALSE;
 	else
@@ -276,8 +276,8 @@ BOOL I2C1_byteStreamRx(uint8 *byte_array)
 	I2C1_busy = TRUE;
 	I2C1_StartRx();
 	while(I2C1_busy);
-	for(j=0; j<data_count; j++)
-		byte_array[j] = buffer[j];
+	for(v=0; v<I2C1_data_count; v++)
+		byte_array[v] = I2C1_buffer[v];
 	if(I2C1_error)
 		return FALSE;
 	else
