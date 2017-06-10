@@ -13,7 +13,7 @@ void __irq I2C_Status1(void)
 {
 	switch(I2C1STAT)
 	{
-//MASTER TRANSMITTER
+	//MASTER TRANSMITTER
 		case 0x08: // START condition has been transmitted
 			I2C1DAT = I2C1_target_address;
 			I2C1CONCLR = 0x18; // clear STO and SI
@@ -59,7 +59,7 @@ void __irq I2C_Status1(void)
 			I2C1_error = TRUE;
 			I2C1_busy = FALSE;
 			break;
-//MASTER RECEIVER
+	//MASTER RECEIVER
 		case 0x40: // SLA+R has been transmitted. ACK has been received.
 			I2C1_data_count = 0;
 			I2C1CONCLR = 0x38; // clear STA, STO and SI
@@ -97,7 +97,7 @@ void __irq I2C_Status1(void)
 				I2C1_error = TRUE;
 			I2C1_busy = FALSE;
 			break;
-//SLAVE RECEIVER
+	//SLAVE RECEIVER
 		case 0x60: // Addressed with own SLA+W. ACK returned
 			I2C1CONCLR = 0x18; // Clear STO and SI
 			I2C1CONSET = 0x04; // Set AA
@@ -142,7 +142,7 @@ void __irq I2C_Status1(void)
 			I2C1CONCLR = 0x3C; // Clear STA, STO, SI and AA
 			I2C1_busy = FALSE;
 			break;
-//SLAVE TRANSMITTER
+	//SLAVE TRANSMITTER
 		case 0xA8: // Own SLA+R received. ACK returned
 			u = 0;
 			I2C1DAT = I2C1_buffer[u];
@@ -189,7 +189,7 @@ void __irq I2C_Status1(void)
 			I2C1CONSET = 0x04; // Set AA
 			I2C1_busy = FALSE;
 			break;
-//MISCELLANEOUS STATES
+	//MISCELLANEOUS STATES
 		case 0xF8: // Nothing to do, just don't go to default. SI not set yet.
 			break;
 		case 0x00: // Bus error during serial transfer.

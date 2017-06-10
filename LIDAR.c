@@ -59,7 +59,7 @@ void sendMap(uint8 *LSBmap, uint8 *MSBmap, uint8 step_div, BOOL protocol)
 BOOL external_request(uint8 *LSBmap, uint8 *MSBmap, uint8 step_divider, uint8 addr)
 {
 	uint8 count = 0;
-	I2C1_byteTx(addr<<1, 0x04);
+	I2C1_byteTx(addr<<1, 0x04);//TO_DO: just try 10 times and give up
 	while(count <= step_divider*100)
 	{
 		I2C1_byteRx(&MSBmap[count]);
