@@ -60,7 +60,7 @@ BOOL external_request(uint8 *LSBmap, uint8 *MSBmap, uint8 step_divider, uint8 ad
 {
 	uint8 count = 0;
 	I2C1_byteTx(addr<<1, 0x04);//TO_DO: just try 10 times and give up
-	while(count <= step_divider*100)
+	while(count < (step_divider*100)+1)
 	{
 		I2C1_byteRx(&MSBmap[count]);
 		I2C1_byteRx(&LSBmap[count]);

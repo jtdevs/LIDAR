@@ -173,3 +173,4 @@ int main(void)
 	}
 }
 //Para efectos de prueba se dejaran las direcciones constantes por ahora.
+//Problema al recibir 400 datos. Analizar con mayor detencion mañana por la tarde.
