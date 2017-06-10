@@ -82,6 +82,8 @@ int main(void)
 				
 				default:
 					external_request(LSBmap, MSBmap, step_divider, input-4);
+					sendMap(LSBmap, MSBmap, step_divider, UART);
+					break;
 				/*case 0x05:
 					IO1SET |= (1 << EN_PIN); //Disable motor
 					break;
