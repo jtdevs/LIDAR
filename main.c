@@ -152,22 +152,6 @@ int main(void)
 
 				default:
 					break;
-				/*case 0x05:
-					IO1SET |= (1 << EN_PIN); //Disable motor
-					break;
-				case 0x06:
-					IO1CLR |= (1 << EN_PIN); //Enable motor
-					delayMicros(500);
-					motor_step(TRUE); // Turn Right
-					break;
-				case 0x07:
-					IO1CLR |= (1 << EN_PIN); //Enable motor
-					delayMicros(500);
-					motor_step(FALSE); // Turn Left
-					break;
-				case 0x08:
-					//take a measurement and send data
-					break;*/
 			}
 		}
 	}
