@@ -1,0 +1,36 @@
+Dependencies for Project 'lidar', Target 'Target 1': (DO NOT MODIFY !)
+F (.\Startup.s)(0x532C8C72)(--cpu ARM7TDMI --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (..\I2C0.c)(0x5968D1FF)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\i2c0.o --omf_browse .\i2c0.crf --depend .\i2c0.d)
+I (..\I2C0.h)(0x5968D1FF)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+I (..\UART.h)(0x5968D1FF)
+I (..\TMR.h)(0x5968D1FF)
+F (..\I2C1.c)(0x5968D1FF)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\i2c1.o --omf_browse .\i2c1.crf --depend .\i2c1.d)
+I (..\I2C1.h)(0x5968D1FF)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+F (..\LIDAR.c)(0x5968D389)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\lidar.o --omf_browse .\lidar.crf --depend .\lidar.d)
+I (..\LIDAR.h)(0x5968D1FF)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+I (..\I2C0.h)(0x5968D1FF)
+I (..\I2C1.h)(0x5968D1FF)
+I (..\TMR.h)(0x5968D1FF)
+I (..\UART.h)(0x5968D1FF)
+F (..\main.c)(0x5968D388)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\main.o --omf_browse .\main.crf --depend .\main.d)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\LIDAR.h)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+I (..\I2C0.h)(0x5968D1FF)
+I (..\I2C1.h)(0x5968D1FF)
+I (..\TMR.h)(0x5968D1FF)
+I (..\UART.h)(0x5968D1FF)
+F (..\TMR.c)(0x5968D1FF)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\tmr.o --omf_browse .\tmr.crf --depend .\tmr.d)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+I (..\TMR.h)(0x5968D1FF)
+F (..\UART.c)(0x5968D1FF)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Philips-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
+I (..\LPC214x.H)(0x5968D1FF)
+I (..\DATATYPES.h)(0x5968D1FF)
+I (..\UART.h)(0x5968D1FF)

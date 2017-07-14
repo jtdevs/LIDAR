@@ -15,12 +15,13 @@ int main(void)
 	uint8 input = 0;
 	uint8 *pinput = &input;
 	uint8 step_divider = 1;
+	BOOL debug, ms;
 	//system control inputs
 	init_inputs();
-	BOOL debug = dbg_stat();
+	debug = dbg_stat();
 	//debug = FALSE;
 	//ms = FALSE;
-	BOOL ms = ms_stat();
+	ms = ms_stat();
 	//User feedback led
 	Init_LED();
 	LED_ON();
@@ -157,4 +158,3 @@ int main(void)
 	}
 }
 //Para efectos de prueba se dejaran las direcciones constantes por ahora.
-//Problema al recibir 400 datos. Analizar con mayor detencion mañana por la tarde.

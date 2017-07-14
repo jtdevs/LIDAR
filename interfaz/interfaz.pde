@@ -11,7 +11,8 @@ boolean readyflag = false;
 boolean constant_scan = false;
 boolean busy = false;
 void setup(){
-  lidar = new Serial(this, "/dev/tty.usbserial-AH03L4JG");//parity=none databits=8 stopbits=1 baudrate = 9600 are defaults
+  //lidar = new Serial(this, "/dev/tty.usbserial-AH03L4JG");//parity=none databits=8 stopbits=1 baudrate = 9600 are defaults
+  lidar = new Serial(this, "COM4");
   lidar.buffer(2);
   size(600,300);
   screen();

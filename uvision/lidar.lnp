@@ -1,0 +1,12 @@
+--cpu ARM7TDMI
+".\startup.o"
+".\i2c0.o"
+".\i2c1.o"
+".\lidar.o"
+".\main.o"
+".\tmr.o"
+".\uart.o"
+--strict --scatter ".\lidar.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\lidar.map" -o .\lidar.axf
