@@ -39,34 +39,28 @@ void draw(){
 
 void keyTyped(){
   if(key == '0' && busy == false){//100 steps
-    lidar.write(0x00);
+    lidar.write(0x01);
     steps = 100;
     degperstep = 180.0/steps;
   }
   else if(key == '1' && busy == false){//200 steps
-    lidar.write(0x01);
+    lidar.write(0x02);
     steps = 200;
     degperstep = 180.0/steps;
   }
   else if(key == '2' && busy == false){//400 steps
-    lidar.write(0x02);
+    lidar.write(0x03);
     steps = 400;
     degperstep = 180.0/steps;
   }
-  else if(key == '3' && busy == false){//blink
-    lidar.write(0x03);
-  }
-  else if(key == '4' && busy == false){//scan
+  else if(key == '3' && busy == false){//continuous scan
     lidar.write(0x04);
   }
+  else if(key == '4' && busy == false){//scan
+    lidar.write(0x05);
+  }
   else if(key == '5' && busy == false){//scan the other guy
-    lidar.write(0x54);
-  }
-  else if(key == '8'){
-    constant_scan = false;//stop scanning
-  }
-  else if(key == '9'){//scan continuously
-    constant_scan = true;
+    lidar.write(0x55);
   }
 }
 
