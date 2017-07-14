@@ -3,7 +3,10 @@
 #include "UART.h"
 
 uint8 UART_buff = 0;
-
+void __irq U0IRQ(void){
+	UART_buff = U0RBR;
+	VICVectAddr = 0x0;
+}
 void InitUART0 (BOOL fast_mode)
 {
 	PINSEL0 |= 0x5; // Set P0.0 -> Tx, P0.1 -> Rx
@@ -22,17 +25,12 @@ void InitUART0 (BOOL fast_mode)
 	}
 	U0LCR &= 0x03; // Set DLAB=0 to lock MULVAL and DIVADDVAL
 
-	U0IER |= 0x01; //Enable RDR interrupt
+	U0IER = 0x01; //Enable RDR interrupt
 	/*  ----------------------- Init VIC for UART0 ------------------------- */
 	VICIntSelect &= 0xFFFFFFBF; // Setting UART0 as IRQ(Vectored)
 	VICVectCntl2 = 0x20 | 6; // Assigning Second Highest Priority Slot to I2C1 and enabling this slot
-	VICVectAddr1 = (uint32)U0IRQ; // Storing vector address of I2C1
+	VICVectAddr2 = (uint32)U0IRQ; // Storing vector address of I2C1
 	VICIntEnable = (1<<6); //Enable I2C1 interrupt NOTE: Writting 0's to this register has no effect
-}
-
-void __irq U0IRQ(void){
-	UART_buff = U0RBR;
-	VICVectAddr = 0x0;
 }
 
 #define RDR (1 << 0) // Receiver Data Ready

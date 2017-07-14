@@ -61,39 +61,44 @@ int main(void)
 					break;
 
 				case 0x01:
+					UART_buff = 0;
 					change_step(1);
 					I2C1_byteTx(0x00, 0x00);
 					step_divider = 1;
 					break;
 
 				case 0x02:
+					UART_buff = 0;
 					change_step(2);
 					I2C1_byteTx(0x00, 0x01);
 					step_divider = 2;
 					break;
 
 				case 0x03:
+					UART_buff = 0;
 					change_step(4);
 					I2C1_byteTx(0x00, 0x02);
 					step_divider = 4;
 					break;
 
 				case 0x04:
+					UART_buff = 0;
 					continuous = !continuous;
 					break;
 
 				case 0x05:
+					UART_buff = 0;
 					if(!continuous)
 						updateRange(LSBmap, MSBmap, step_divider);
 					sendMap(LSBmap, MSBmap, step_divider, UART);
 					break;
 					
 				default:
+					UART_buff = 0;
 					external_request(LSBmap, MSBmap, step_divider, input-5);
 					sendMap(LSBmap, MSBmap, step_divider, UART);
 					break;
 			}
-			UART_buff = 0;
 		}
 	}
 	else
