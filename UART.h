@@ -6,4 +6,5 @@ extern unsigned char U0Read(void);
 extern void U0Write(char data);
 extern void U0Write_text(char * msg);
 
+extern uint8 I2C1_busy;
 #endif

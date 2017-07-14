@@ -7,6 +7,8 @@
 #include "UART.h"
 #define UART TRUE
 #define I2C FALSE
+
+BOOL continuous = FALSE;
 int main(void)
 {
 	//variables
@@ -49,61 +51,49 @@ int main(void)
 		LED_OFF();
 		while(TRUE)
 		{
-			input = U0Read();
+			//input = U0Read();
+			input = UART_buff;
 			switch(input)
 			{
 				case 0x00:
+					if(continuous)
+						updateRange(LSBmap, MSBmap, step_divider);
+					break;
+
+				case 0x01:
 					change_step(1);
 					I2C1_byteTx(0x00, 0x00);
 					step_divider = 1;
 					break;
 
-				case 0x01:
+				case 0x02:
 					change_step(2);
 					I2C1_byteTx(0x00, 0x01);
 					step_divider = 2;
 					break;
 
-				case 0x02:
+				case 0x03:
 					change_step(4);
 					I2C1_byteTx(0x00, 0x02);
 					step_divider = 4;
 					break;
 
-				case 0x03:
-					LED_ON();
-					delayMicros(500000);//half a second
-					LED_OFF();
-					break;
-
 				case 0x04:
-					updateRange(LSBmap, MSBmap, step_divider);
+					continuous = !continuous;
+					break;
+
+				case 0x05:
+					if(!continuous)
+						updateRange(LSBmap, MSBmap, step_divider);
 					sendMap(LSBmap, MSBmap, step_divider, UART);
 					break;
-				
+					
 				default:
-					external_request(LSBmap, MSBmap, step_divider, input-4);
+					external_request(LSBmap, MSBmap, step_divider, input-5);
 					sendMap(LSBmap, MSBmap, step_divider, UART);
 					break;
-				/*case 0x05:
-					IO1SET |= (1 << EN_PIN); //Disable motor
-					break;
-
-				case 0x06:
-					IO1CLR |= (1 << EN_PIN); //Enable motor
-					delayMicros(500);
-					motor_step(TRUE); // Turn Right
-					break;
-
-				case 0x07:
-					IO1CLR |= (1 << EN_PIN); //Enable motor
-					delayMicros(500);
-					motor_step(FALSE); // Turn Left
-					break;
-				case 0x08:
-					//send a scan request, wait for the incoming data
-					*/
 			}
+			UART_buff = 0;
 		}
 	}
 	else
