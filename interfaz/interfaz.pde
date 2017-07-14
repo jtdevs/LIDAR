@@ -1,3 +1,4 @@
+//Se estan mostrando los datos al reves xd arreglar!
 import processing.serial.*;
 Serial lidar;
 byte[] inBuffer = new byte[2];
