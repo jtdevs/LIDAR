@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Week 4 report}
+\author{Javier Torres}
+\date{January 23-27, 2017}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Advance Status}
+
+\paragraph{Final bracket}
+Te previous version of the bracket was improved both aesthetically and structurally. This version is intended to be the final version.
+
+\paragraph{Setting the home position}
+The home adjusting problem was solved by means of a push button. The idea is to have the sensor push the button if and only if is at the home position. That way de MCU can detect when the sensor has reached the starting position.
+
+\paragraph{PCB design}
+A Printed Circuit Board was designed to mount all the electronics. The result was a 1.8 x 2.3 [inch] board, wich fits the width of the motor. The board was designed with Autodesk's Eagle PCB design software.
+
+\section{Comments and Thoughts}
+
+\paragraph{About the home adjustment solution}
+Two possible solutions were evaluated: mechanical switch, using a push button and optical switch, using a reflectance sensor.
+Both solutions were cheap and easy to implement, but I opted for the mechanical switch as it doesn't require any calibration and it's reading require less CPU resources.
+
+\section{Next Steps}
+
+\paragraph{PCB manufacture and testing}
+I will find somewhere to manufacture a prototype of the PCB with no silkscreen or antisolder mask before manufacturing a final, more finished version. This to make sure everything is working as intended.
+
+\paragraph{Prototype enclosure}
+Once all the electronic components are mounted on the PCB and everything is working properly, I will start working on an enclosure for the project.
+
+\end{document}

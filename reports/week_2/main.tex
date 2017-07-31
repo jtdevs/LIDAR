@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{Week 2 report}
+\author{Javier Torres}
+\date{January 9-13, 2017}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Advance Status}
+
+\paragraph{Collecting information from the sensor}
+I was able to read information from the sensor and send it via USB to the computer. To accomplish this, I had to:
+\begin{itemize}
+    \item Debug and test the library.
+    \item Write a program to read the data and display it on the computer.
+\end{itemize}
+
+\paragraph{Stepper motor control}
+I have started working with the stepper motors. Unluckily I wasn't able to use the motor controller\footnote{Product page at \url{http://www.phidgets.com/products.php?category=13&product_id=1062_1}} that I was supposed to work with. Next week I will present other alternatives.
+
+\section{Comments and Thoughts}
+\paragraph{About the library testing}
+At first, the library didn't worked as it was intended to. After three days of debugging and testing, it worked flawlessly. The main error was a typo in a register address. With this solved, I continued with the measurement rate testing. According to these results, the maximum measurement rate that can be achieved without affecting the sensor accuracy is approximately 250Hz.
+\paragraph{About the motor controller}
+The problem with the motor controller is that it was intended as a USB device to control stepper motors. The MCU has built-in USB capabilities, but only as a USB device, not as a USB host. Thus, communication cannot be established between these devices e.g., it will be like trying to connect a USB keyboard to a USB mouse. Notwithstanding, before I discard this motor controller I'll seek advice from someone with more experience on this subject.
+
+\section{Next Steps}
+\paragraph{Scalability}
+I will start working on improving the library for easier scalability. This because the number of sensors connected to a single MCU could increase in the future. Also, I'll keep scalability in mind as an important factor.
+
+\paragraph{Motor controller}
+I will find a solution to the motor controller problem. Then, I will start working on expanding the library to control stepper motors as well.
+
+\paragraph{Sensor bracket}
+Once I am able to read the sensor and control the stepper motor, I will start working on a bracket to mount the sensor on the motor shaft.
+
+\end{document}

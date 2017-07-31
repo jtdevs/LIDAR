@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Week 6 report}
+\author{Javier Torres}
+\date{February 6-10, 2017}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Advance Status}
+
+\paragraph{Software updates}
+I've added a simple interface to set important parameters for the system, such as degrees per step (i.e. motor speed) and I2C address. Also, I've implemented I2C communication between MCU's. Through this protocol the master LIDAR will request information from the slaves.
+
+\paragraph{Printed Circuit Board (PCB)}
+The PCB was manufactured as needed (without silkscreen or anti-solder mask). I've started mounting the components on the PCB and looking for possible improvements. A list of the changes that need to be made so far is:
+\begin{itemize}
+    \item Widen the pin holes of the MCU footprint.
+    \item Connect the MCU to the 5v supply (currently connected to 12v).
+    \item Change the motor connector for the local market standard.
+    \item Place the regulator and capacitors in the top layer.
+    \item Simplify the connections between the motor controller and MCU.
+    \item Add mounting holes.
+\end{itemize}
+More changes may be added to this list next week.
+
+\section{Comments and Thoughts}
+
+\paragraph{About the PCB changes}
+All of the changes are further explained here:
+\begin{itemize}
+    \item \textbf{Widen the pin holes of the MCU footprint:} The standard hole diameter for pins is 0.04 [inch]. For some reason I've used 0.03 [inch]. The pins can still enter the hole but not without some effort.
+    \item \textbf{Connect the MCU to the 5v supply:} The MCU has it's own internal voltage regulator. It takes any voltage between 5 - 25 [V] and outputs a stable 3.3 [V] supply for the on-board LPC2148 chip. Currently the MCU is connected to the 12 [V] supply and the internal regulator has to drop it to 3.3v. All the wasted energy in the process is then released as heat. To reduce the amount of heat produced I will connect the MCU to the 5 [V] supply instead, so the wasted energy (and the heat produced) is much less.
+    \item \textbf{Change the motor connector:} Currently the footprint for the motor connector has a 3.5 [mm] separation between pins. The connectors available on the local market have a 5 [mm] separation between pins. I will change the footprint to 5 [mm] separation to fit the products available on the local market.
+    \item \textbf{Place the regulator and capacitors in the top layer:} While I was mounting the components on the board, I noticed that the highest components were the capacitors, the regulator and the MCU. If I place all of them in the top layer of the PCB, then the bottom layer will be almost flat. This will be easier later in the enclosure design.
+    \item \textbf{Simplify the connections between the motor controller and the MCU:} To avoid errors, I will eliminate unnecessary connections between the motor controller and the MCU. One of them caused a chain of errors that ended with the motor controller and the MCU burned out this week.
+    \item \textbf{Add mounting holes:} Right now there's no mean to mount the PCB in an enclosure.
+\end{itemize}
+
+\paragraph{About the chain of errors mentioned above}
+This week when I was testing the connections made in the PCB design (just before the PCB arrived) I made a mistake on the wiring and the motor wouldn't move. I thought that it was a mistake on the program because when I tested with the Multimeter, the voltage on the SLP pin of the motor controller was around 0 [V]. For the motor to move the voltage applied to this pin has to be 3.3 [V], so I connected the pin directly to 3.3 [V]. What I didn't knew at the moment was that this pin is not current protected. A lot of current started flowing through this pin and the motor controller got very hot. I quickly disconnected the power source but it was too late. Both the MCU and the motor controller were burned out. Later I realized that the motor wouldn't move because the SLP pin was connected to the wrong MCU pin. This pin, if left disconnected is internally pulled HIGH (i.e. connected to 3.3 [V]), so the connection to the MCU was unnecessary and the whole situation could've  been avoided.
+\section{Next Steps}
+
+\paragraph{PCB mounting testing}
+I will keep soldering the rest of the electronic components on the PCB and looking for possible improvements. Also I will apply all the changes listed above to the design. Once I'm sure that nothing else needs to be changed I will manufacture the final version of the PCB.
+
+\paragraph{Prototype enclosure}
+Once all the electronic components are mounted on the PCB and everything is working properly, I will start working on an enclosure for the project.
+
+\end{document}
